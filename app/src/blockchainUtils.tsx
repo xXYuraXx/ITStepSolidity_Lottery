@@ -1,11 +1,94 @@
 import { BrowserProvider, Contract, ethers, type Signer } from "ethers";
 
-const contractAddress = "0xD28a9A7ea578F367bD49ec19A44153De643e027D"; // Replace with your contract address
+const contractAddress = "0xf883AC70aB64A7bA3429b92B31921037647d6AFd"; // Replace with your contract address
 const abi = [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getMembersCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getWinner",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address payable",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "username",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct Lottery.Participant",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isManager",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_username",
+          "type": "string"
+        }
+      ],
+      "name": "join",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -18,8 +101,7 @@ const abi = [
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
@@ -33,13 +115,17 @@ const abi = [
       "outputs": [
         {
           "internalType": "address payable",
-          "name": "",
+          "name": "addr",
           "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "username",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
@@ -47,67 +133,16 @@ const abi = [
       "outputs": [
         {
           "internalType": "address payable",
-          "name": "",
+          "name": "addr",
           "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "username",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [],
-      "name": "isManager",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [],
-      "name": "join",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "payable",
-      "type": "function",
-      "payable": true
-    },
-    {
-      "inputs": [],
-      "name": "getBalance",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [],
-      "name": "getWinner",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "nonpayable",
       "type": "function"
     }
   ];
@@ -153,9 +188,9 @@ const withContract = async (
   }
 };
 
-export const joinLottery = async (valueInEther: string = "1"): Promise<void> => {
+export const joinLottery = async (valueInEther: string = "1", username: string): Promise<void> => {
   await withContract(async (contract) => {
-    return await contract.join({ value: ethers.parseEther(valueInEther) });
+    return await contract.join(username, { value: ethers.parseEther(valueInEther) });
   });
 };
 
@@ -182,7 +217,18 @@ export const loteryRandom = async (): Promise<string | null> => {
   });
 };
 
-export const getWinner = async (): Promise<string | null> => {
+export const getMembersCount = async (): Promise<number | null> => {
+    return withContract(async (contract) => {
+        try {
+            return await contract.getMembersCount();
+        } catch (error) {
+            console.error("Error getting members count:", error);
+            return null;
+        }
+    });
+};
+
+export const getWinner = async (): Promise<Participant | null> => {
   return withContract(async (contract) => {
     try {
       await contract.getWinner();
@@ -206,3 +252,8 @@ export const getIsManager = async (): Promise<boolean | null> => {
         }
     });
 };
+
+export interface Participant {
+    addr: string;
+    username: string;
+}
