@@ -16,7 +16,7 @@ const config: HardhatUserConfig = {
     },
     ganache: {
       url: process.env.GANACHE_RPC_URL || "http://127.0.0.1:7545",
-      accounts: ganacheAccounts,
+      ...(ganacheAccounts.length > 0 ? { accounts: ganacheAccounts } : {}),
     },
     // sepolia: {
     //   url: process.env.SEPOLIA_URL,

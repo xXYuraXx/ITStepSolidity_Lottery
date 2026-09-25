@@ -1,11 +1,36 @@
 import { BrowserProvider, Contract, ethers, type Signer } from "ethers";
 
-const contractAddress = "0xf883AC70aB64A7bA3429b92B31921037647d6AFd"; // Replace with your contract address
+const contractAddress = "0xd95df2C914f4E8bF18A9de5E767476E243a61e54"; // Replace with your contract address
 const abi = [
     {
       "inputs": [],
       "stateMutability": "nonpayable",
       "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "getAllMembers",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address payable",
+              "name": "addr",
+              "type": "address"
+            },
+            {
+              "internalType": "string",
+              "name": "username",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct Lottery.Participant[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -251,6 +276,33 @@ export const getIsManager = async (): Promise<boolean | null> => {
             return null;
         }
     });
+};
+
+export const getWinnerInfo = async (): Promise<Participant | null> => {
+  return withContract(async (contract) => {
+    try {
+      const win = await contract.winner();
+      if (win && win.addr !== "0x0000000000000000000000000000000000000000") {
+        return { addr: win.addr, username: win.username };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting winner info:", error);
+      return null;
+    }
+  });
+};
+
+export const getMembers = async (): Promise<Participant[]> => {
+  return withContract(async (contract) => {
+    try {
+      const members = await contract.getAllMembers();
+      return members.map((m: any) => ({ addr: m.addr, username: m.username }));
+    } catch (error) {
+      console.error("Error getting members:", error);
+      return [];
+    }
+  });
 };
 
 export interface Participant {

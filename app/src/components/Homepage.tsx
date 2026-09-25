@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getIsManager } from "../blockchainUtils";
 import ManagerPanel from "./ManagerPanel";
 import MemberPanel from "./MemberPanel";
+import ParticipantsAndWinner from "./ParticipantsAndWinner";
 
 function Homepage() {
     const [isManager, setIsManager] = useState<boolean | null>(null);
@@ -22,6 +23,7 @@ function Homepage() {
                         {isManager ?
                         <ManagerPanel />
                         : <MemberPanel />}
+                        <ParticipantsAndWinner />
                     </div>
                 )}
 

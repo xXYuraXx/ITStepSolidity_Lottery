@@ -35,6 +35,10 @@ contract Lottery {
         return members.length;
     }
 
+    function getAllMembers() public view returns (Participant[] memory) {
+        return members;
+    }
+
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }

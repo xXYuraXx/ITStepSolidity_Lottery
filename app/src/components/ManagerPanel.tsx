@@ -26,14 +26,6 @@ function ManagerPanel() {
       <button type="button" className="btn btn-primary" onClick={handleStartLottery}>
         Start Lottery
       </button>
-      {winner !== null ? (
-        <>
-          <p className="my-2">Winner Name: {winner.username}<br />
-          Winner Address: {winner.addr}</p>
-        </>
-      ) : (
-        <p>No winner yet</p>
-      )}
     </div>
   );
 
